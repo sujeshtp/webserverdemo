@@ -1,0 +1,24 @@
+---
+- name: Deploy webapp       
+  hosts: appservers
+  become: True
+  tasks:
+   - name: Stop Container
+     command: docker stop webapp
+     ignore_errors: yes
+
+   - name: Remove Container
+     command: docker rm webapp
+     ignore_errors: yes
+
+   - name: Remove Image       
+     command: docker rmi webapp-img
+     ignore_errors: yes
+
+   - name: Build Container  
+     command: docker build -t webapp-img .
+     args:
+       chdir: /opt/docker
+
+   - name: Start Container         
+     command: docker run -d --name webapp -p 8080:8080 webapp-img
